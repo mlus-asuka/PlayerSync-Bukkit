@@ -1,0 +1,9 @@
+host: "localhost"
+port: 3306
+username: "playersync"
+password: "pleaseChangeThisPassword"
+database_name: "playersync"
+server_id : 0
+is_chat_server: false
+chat_server_ip: "localhost"
+chat_server_port: 7900

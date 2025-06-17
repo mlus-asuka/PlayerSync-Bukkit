@@ -1,0 +1,4 @@
+name: PlayerSync-Plugin
+version: '1.0-SNAPSHOT'
+main: vip.fubuki.playersync
+api-version: '1.21'
