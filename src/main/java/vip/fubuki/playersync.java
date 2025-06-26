@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class playersync extends JavaPlugin {
-    private FileConfiguration config;
     public static playersync instance;
     public static JdbcConfig JdbcConfig;
 
@@ -24,7 +23,7 @@ public final class playersync extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        config = getConfig();
+        FileConfiguration config = getConfig();
 
         JdbcConfig = new JdbcConfig(config);
 

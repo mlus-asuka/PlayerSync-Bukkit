@@ -159,16 +159,15 @@ public class VanillaSync implements Listener {
             raw = args.get("enchantments");
             if (raw instanceof Map) {
                 Map<?, ?> map = (Map)raw;
-                Iterator var8 = map.entrySet().iterator();
 
-                while(var8.hasNext()) {
-                    Map.Entry<?, ?> entry = (Map.Entry)var8.next();
+                for (Map.Entry<?, ?> value : map.entrySet()) {
+                    Map.Entry<?, ?> entry = value;
                     String stringKey = entry.getKey().toString();
                     stringKey = Bukkit.getUnsafe().get(Enchantment.class, stringKey);
                     NamespacedKey key = NamespacedKey.fromString(stringKey.toLowerCase(Locale.ROOT));
                     Enchantment enchantment = Bukkit.getUnsafe().get(Registry.ENCHANTMENT, key);
                     if (enchantment != null && entry.getValue() instanceof Integer) {
-                        result.addUnsafeEnchantment(enchantment, (Integer)entry.getValue());
+                        result.addUnsafeEnchantment(enchantment, (Integer) entry.getValue());
                     }
                 }
             }
