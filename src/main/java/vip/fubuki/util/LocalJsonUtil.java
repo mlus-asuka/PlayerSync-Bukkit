@@ -19,12 +19,29 @@ public class LocalJsonUtil {
         return map;
     }
 
-    public static Map<String,Object> mapDeserialize(String mapStr) {
+//    public static Map<String,Object> mapDeserialize(String mapStr) {
+//        Map<String, Object> map = new HashMap<>();
+//        Pattern pattern = Pattern.compile("(\\w+)=([^,}]+)");
+//        Matcher matcher = pattern.matcher(mapStr);
+//        while (matcher.find()) {
+//            map.put(matcher.group(1), matcher.group(2));
+//        }
+//        return map;
+//    }
+
+    public static Map<String, Object> mapDeserialize(String mapStr) {
         Map<String, Object> map = new HashMap<>();
-        Pattern pattern = Pattern.compile("(\\w+)=([^,}]+)");
+        Pattern pattern = Pattern.compile("(\\w+)=\\{?([^{},]+|\\{[^{}]*})}?");
         Matcher matcher = pattern.matcher(mapStr);
+
         while (matcher.find()) {
-            map.put(matcher.group(1), matcher.group(2));
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+            if (value.startsWith("{") && value.endsWith("}")) {
+                map.put(key, mapDeserialize(value.substring(1, value.length()-1)));
+            } else {
+                map.put(key, value);
+            }
         }
         return map;
     }

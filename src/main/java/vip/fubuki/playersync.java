@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import vip.fubuki.chat.ChatSyncClient;
 import vip.fubuki.config.JdbcConfig;
+import vip.fubuki.sync.ChatSync;
 import vip.fubuki.sync.VanillaSync;
 import vip.fubuki.util.JDBCsetUp;
 
@@ -15,6 +16,10 @@ public final class playersync extends JavaPlugin {
     private FileConfiguration config;
     public static playersync instance;
     public static JdbcConfig JdbcConfig;
+
+    public playersync() {
+        instance = this;
+    }
     @Override
     public void onEnable() {
         saveDefaultConfig();

@@ -1,4 +1,4 @@
-package vip.fubuki;
+package vip.fubuki.sync;
 
 
 import vip.fubuki.chat.ChatSyncClient;

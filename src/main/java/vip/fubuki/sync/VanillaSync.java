@@ -110,27 +110,22 @@ public class VanillaSync implements Listener {
             }
         }
 
-        serverPlayer.addScoreboardTag("player_synced");
-
         rs2.close();
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        executorService.submit(() -> {
-            try {
-                doPlayerJoin(event);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+    public void onPlayerJoin(PlayerJoinEvent event) throws SQLException, IOException {
+        doPlayerJoin(event);
     }
 
     // deserialize item and potentially create placeholders
     private ItemStack deserializeAndCreatePlaceholderIfNeeded(String serializedNbt) {
-
         String nbtString = deserializeString(serializedNbt);
-        return deserialize_modify(LocalJsonUtil.mapDeserialize(nbtString));
+        Map <String, Object> nbtMap = LocalJsonUtil.mapDeserialize(nbtString);
+        if (nbtMap.isEmpty()) {
+            return new ItemStack(Material.AIR); // Return empty item if no data
+        }
+        return deserialize_modify(nbtMap);
     }
 
     @NotNull
@@ -247,23 +242,39 @@ public class VanillaSync implements Listener {
     // Helper function to get the NBT string to be saved
     // If item is a placeholder, get original NBT; otherwise, get current NBT
     private String getNbtForStorage(ItemStack itemStack) {
-            // It's a normal item or empty, serialize its current NBT
-            return serialize(serializeNBT(itemStack).toString());
-
+        // It's a normal item or empty, serialize its current NBT
+        return serialize(serializeNBT(itemStack).toString());
     }
 
     public Map<String, Object> serializeNBT(ItemStack itemStack) {
         if(itemStack==null){
-            return new ItemStack(Material.AIR).serialize();
+            return new HashMap<>();
         }
-        return itemStack.serialize();
+        return serialize(itemStack);
+    }
+
+    @NotNull
+    public Map<String, Object> serialize(ItemStack stack) {
+        Map<String, Object> result = new LinkedHashMap();
+        result.put("v", Bukkit.getUnsafe().getDataVersion());
+        result.put("type", stack.getType().name());
+        if (stack.getAmount() != 1) {
+            result.put("amount", stack.getAmount());
+        }
+
+        ItemMeta meta = stack.getItemMeta();
+        if (!Bukkit.getItemFactory().equals(meta, null)) {
+            result.put("meta", meta);
+        }
+
+        return result;
     }
 
     public void store(Player player, boolean init) throws SQLException, IOException {
         String player_uuid = player.getUniqueId().toString();
 
         // Basic Attributes
-        float XP = player.getExp();
+        float XP = player.getTotalExperience();
         int food_level = player.getFoodLevel();
         int health = (int) player.getHealth();
         // Left Hand
@@ -336,6 +347,9 @@ public class VanillaSync implements Listener {
     }
 
     private static void setXpForPlayer(Player serverPlayer, int databaseXp) {
-        serverPlayer.setExp(databaseXp);
+        serverPlayer.setTotalExperience(0);
+        serverPlayer.setExp(0);
+        serverPlayer.setLevel(0);
+        serverPlayer.giveExp(databaseXp);
     }
 }
